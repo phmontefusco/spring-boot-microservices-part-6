@@ -1,0 +1,1 @@
+docker build -t phmontefusco/appms-application-gateway:0.0.1 -f Dockerfile.layered .

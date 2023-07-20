@@ -21,7 +21,7 @@
         <module>inventory-service</module>
         <module>discovery-server</module>
         <module>api-gateway</module>
-        <module>notication-service</module>
+        <module>notification-service</module>
     </modules>
 
     <properties>
@@ -71,6 +71,22 @@
                     <target>16</target>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
+                <version>3.2.1</version>
+                <configuration>
+                    <from>
+                        <image>eclipse-temuri</image>
+                    </from>
+                    <to>
+                        <!--suppress UnresolvedMavenProperty -->
+                        <image>phmontefusco/${artifactId}</image>
+                    </to>
+                </configuration>
+            </plugin>
+
         </plugins>
     </build>
 </project>

@@ -1,0 +1,1 @@
+docker build -t phmontefusco/appms-notification-service:0.0.1 -f Dockerfile.layered .

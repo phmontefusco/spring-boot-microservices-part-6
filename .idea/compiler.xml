@@ -12,9 +12,12 @@
         <module name="discovery-server" />
         <module name="inventory-service" />
         <module name="order-service" />
-        <module name="notication-service" />
+        <module name="notification-service" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="notication-service" target="16" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
@@ -23,6 +26,7 @@
       <module name="inventory-service" options="-parameters" />
       <module name="microservices-new" options="-parameters" />
       <module name="notication-service" options="-parameters" />
+      <module name="notification-service" options="-parameters" />
       <module name="order-service" options="-parameters" />
       <module name="product-service" options="-parameters" />
     </option>

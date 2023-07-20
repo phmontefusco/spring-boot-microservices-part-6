@@ -1,0 +1,1 @@
+docker build -t phmontefusco/appms-discovery-server:0.0.1 -f Dockerfile.layered .
