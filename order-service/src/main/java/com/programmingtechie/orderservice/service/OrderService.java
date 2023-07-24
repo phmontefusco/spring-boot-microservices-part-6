@@ -34,7 +34,7 @@ public class OrderService {
     private final InventoryClient inventoryClient;
     private final WebClient.Builder webClientBuilder;
     private final Tracer tracer;
-    //private final KafkaTemplate<String, OrderPlacedEvent> kafkaTemplate;;
+    private final KafkaTemplate<String, OrderPlacedEvent> kafkaTemplate;;
     private final KafkaTemplate<String, String> kafkaTemplate2;;
     @Value("${application.topic}")
     private String applicationTopic;
@@ -92,7 +92,7 @@ public class OrderService {
                     System.out.println("erro de instancia do objeto" + e.getMessage());
                     throw new Exception(e);
                 }
-//                kafkaTemplate.send(applicationTopic, orderKafka);
+                kafkaTemplate.send(applicationTopic, orderKafka);
 //                kafkaTemplate.send("notificationTopic", orderKafka);
                 log.info("inicio da chamanda - notification sended");
                 kafkaTemplate2.send("notificationTopic2", xcb);

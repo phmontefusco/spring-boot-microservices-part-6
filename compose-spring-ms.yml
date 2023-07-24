@@ -189,7 +189,7 @@ services:
     container_name: kafka
     ports:
       - "9092:9092"
-      #- "29092:29092"
+      - "29092:29092"
     volumes:
       - '/d/bancodedados/kafka/binami/data:/bitnami'
     environment:
