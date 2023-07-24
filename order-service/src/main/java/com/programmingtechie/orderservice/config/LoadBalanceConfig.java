@@ -1,0 +1,32 @@
+package com.programmingtechie.orderservice.config;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.cloud.client.loadbalancer.LoadBalancerClientsProperties;
+import org.springframework.cloud.loadbalancer.support.LoadBalancerClientFactory;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+@RequiredArgsConstructor
+public class LoadBalanceConfig {
+
+    //Workaround para resolver problema do feign sendo utilizado
+    //por uma chamada assincrona
+    @Bean
+    @ConditionalOnMissingBean
+    public LoadBalancerClientFactory loadBalancerClientFactory(LoadBalancerClientsProperties properties) {
+        return new LoadBalancerClientFactory(properties) {
+            @Override
+            protected AnnotationConfigApplicationContext createContext(String name) {
+                // FIXME: temporary switch classloader to use the correct one when creating the context
+                ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
+                Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
+                AnnotationConfigApplicationContext context = super.createContext(name);
+                Thread.currentThread().setContextClassLoader(originalClassLoader);
+                return context;
+            }
+        };
+    }
+}

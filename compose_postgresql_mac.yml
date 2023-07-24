@@ -1,0 +1,135 @@
+version: '3.9'
+
+services:
+
+  postgresql:
+    image: postgres:15.3
+    hostname: postgresql
+    container_name: postgresql
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_DB: "order-service"
+      TZ: "America/Sao_Paulo"
+    ports:
+      - '5432:5432'
+    restart: unless-stopped
+    volumes:
+      # - '/d/bancodedados/postgresql/inicializacao.sql:/docker-entrypoint-initdb.d/create_tables.sql'
+      #- '/Users/phmacos/bancodedados/postgresql:/var/lib/postgresql/data'
+      - '/d/bancodedados/postgresql:/var/lib/postgresql/data'
+    networks:
+      - microservice-network
+      
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "postgres@email.com"
+      PGADMIN_DEFAULT_PASSWORD: "postgres"
+      #PGADMIN_LISTEN_PORT: 15432
+    ports:
+      - "15432:80"
+    depends_on:
+      - postgresql
+    networks:
+      - microservice-network
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: keycloak
+    environment:
+      DB_VENDOR: POSTGRES
+      DB_ADDR: postgresql
+      DB_DATABASE: keycloak
+      DB_USER: keycloak
+      DB_SCHEMA: public
+      DB_PASSWORD: postgres
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: admin
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      TZ: "America/Sao_Paulo"
+      # Uncomment the line below if you want to specify JDBC parameters. The parameter below is just an example, and it shouldn't be used in production without knowledge. It is highly recommended that you read the PostgreSQL JDBC driver documentation in order to use it.
+      #JDBC_PARAMS: "ssl=true"
+#      KEYCLOAK_DATABASE_VENDOR: postgresql
+#      KEYCLOAK_DATABASE_NAME: postgresql
+#      KEYCLOAK_DATABASE_USER: postgres
+#      KEYCLOAK_DATABASE_PASSWORD: postgres
+#      KC_DB_URL: jdbc:postgresql://localhost:5432/keycloak
+#      KC_LEVEL_LOG: INFO
+##      KC_HEALTH_ENABLE: true
+##    healthcheck:
+##      test: ["CMD", "curl", "-f", "http://localhost:8080/health/ready"]
+##      interval: 15s
+##      timeout: 2s
+##      retries: 10
+    # clientId: 493bjYFY1ZsomJYwHrpC9AaZMvQZZj7V
+    # "issuer":"http://localhost:8181/realms/springms-realm"
+    ports:
+      - "8181:8080"
+    depends_on:
+      - postgresql
+    networks:
+      - microservice-network
+    command:
+      - start-dev
+
+  mongodb:
+    image: mongo
+    restart: always
+    container_name: mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INIT_DATABASE: init
+    ports:
+      - 27017:27017
+    volumes:
+      #- '/Users/phmacos/bancodedados/mongo:/data/db'
+      - '/d/bancodedados/mongo:/data/db'
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongo localhost:27017/test --quiet
+      retries: 5
+      interval: 15s
+      start_period: 30s  
+    networks:
+      - microservice-network
+      
+  mongo-express:
+    image: mongo-express
+    restart: unless-stopped
+    container_name: mongo_ui
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: root
+      #ME_CONFIG_MONGODB_SERVER: mongodb
+      # Utilize o nome do container name no servername
+      # na url vem depois do @
+      ME_CONFIG_MONGODB_URL: mongodb://root:example@mongodb:27017/
+    ports:
+      - 8081:8081
+    depends_on:
+      - mongodb
+    networks:
+      - microservice-network
+
+  zipkin:
+    image: openzipkin/zipkin
+    container_name: zipkin
+    # Environment settings are defined here https://github.com/openzipkin/zipkin/blob/master/zipkin-server/README.md#environment-variables
+    environment:
+      - STORAGE_TYPE=mem
+      # Uncomment to disable scribe
+      # - SCRIBE_ENABLED=false
+      # Uncomment to enable self-tracing
+      # - SELF_TRACING_ENABLED=true
+      # Uncomment to enable debug logging
+      # - JAVA_OPTS=-Dlogging.level.zipkin=DEBUG
+    ports:
+      # Port used for the Zipkin UI and HTTP Api
+      - 9411:9411
+
+networks:
+  microservice-network:
+    #driver: bridge

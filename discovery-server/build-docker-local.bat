@@ -1,0 +1,1 @@
+docker build -t appms-discovery-server:latest -f Dockerfile.layered .

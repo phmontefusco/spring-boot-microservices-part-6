@@ -1,0 +1,1 @@
+docker build -t appms-application-gateway:latest -f Dockerfile.layered .
