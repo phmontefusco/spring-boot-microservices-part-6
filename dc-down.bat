@@ -1,1 +1,1 @@
-docker-compose -f .\compose-spring-ms.yml down -v
+docker-compose -f compose-spring-ms.yml down -v

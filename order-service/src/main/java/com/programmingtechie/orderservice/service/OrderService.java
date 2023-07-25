@@ -35,7 +35,7 @@ public class OrderService {
     private final WebClient.Builder webClientBuilder;
     private final Tracer tracer;
     private final KafkaTemplate<String, OrderPlacedEvent> kafkaTemplate;;
-    private final KafkaTemplate<String, String> kafkaTemplate2;;
+    //private final KafkaTemplate<String, String> kafkaTemplate2;;
     @Value("${application.topic}")
     private String applicationTopic;
 
@@ -95,7 +95,7 @@ public class OrderService {
                 kafkaTemplate.send(applicationTopic, orderKafka);
 //                kafkaTemplate.send("notificationTopic", orderKafka);
                 log.info("inicio da chamanda - notification sended");
-                kafkaTemplate2.send("notificationTopic2", xcb);
+//                kafkaTemplate2.send("notificationTopic2", xcb);
                 log.info("notification sended");
                 return "Order Placed Successfully";
             } else {
